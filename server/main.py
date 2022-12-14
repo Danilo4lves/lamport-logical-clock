@@ -58,8 +58,9 @@ def server(host='localhost', port=8082):
                     if (checking_account is None):
                         checking_account = CheckingAccount(database, rg, client_name)
 
-                    msg = "Hello, {}!".format(checking_account.client_name).encode("UTF-8");
-                    client.send(msg)
+                    msg = Message(clock_timestamp, MessageType.RESPONSE, {"msg": "Hello, {}!".format(checking_account.client_name) })
+
+                    client.send(msg.to_json())
                 case MessageType.DEPOSIT:
                     checking_account = CheckingAccount.login(database, rg)
                     amount_in_cents = ceil(int(message.content['amount']) * 100)
@@ -69,10 +70,11 @@ def server(host='localhost', port=8082):
 
                     try:
                         checking_account.deposit(amount_in_cents)
-                        msg = "Deposited successfully".encode("UTF-8");
-                        client.send(msg)
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": "Deposited successfully" })
+                        client.send(msg.to_json())
                     except Exception as err:
-                        client.send(str(err).encode("UTF-8"))
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": str(err) })
+                        client.send(msg.to_json())
 
                 case MessageType.WITHDRAW:
                     checking_account = CheckingAccount.login(database, rg)
@@ -81,10 +83,14 @@ def server(host='localhost', port=8082):
                     if (checking_account is None):
                         break
 
-                    checking_account.withdraw(amount_in_cents)
+                    try:
+                        checking_account.withdraw(amount_in_cents)
 
-                    msg = "Withdrawn successfully".encode("UTF-8");
-                    client.send(msg)
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": "Withdrawn successfully" })
+                        client.send(msg.to_json())
+                    except Exception as err:
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": str(err) })
+                        client.send(msg.to_json())
                 case MessageType.BALANCE:
                     checking_account = CheckingAccount.login(database, rg)
 
@@ -93,8 +99,8 @@ def server(host='localhost', port=8082):
 
                     amount = int(checking_account.balance()) / 100
 
-                    msg = "Balance: {}".format(str(amount)).encode("UTF-8");
-                    client.send(msg)
+                    msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": "Balance: {}".format(str(amount)) })
+                    client.send(msg.to_json())
                 case MessageType.TRANSFER:
                     checking_account = CheckingAccount.login(database, rg)
 
@@ -106,10 +112,11 @@ def server(host='localhost', port=8082):
 
                     try:
                         checking_account.transfer_to(destination_rg, amount_in_cents)
-                        msg = "The transfer was finished succesfully".encode("UTF-8");
-                        client.send(msg)
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": "The transfer was finished succesfully" })
+                        client.send(msg.to_json())
                     except Exception as err:
-                        client.send(str(err).encode("UTF-8"))
+                        msg = Message(clock_timestamp, MessageType.RESPONSE, { "msg": str(err)})
+                        client.send(msg.to_json())
 
 
 

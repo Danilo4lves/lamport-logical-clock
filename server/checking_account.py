@@ -48,7 +48,7 @@ class CheckingAccount:
 
         if (amount_in_cents > ck_amount_in_cents):
             raise Exception(
-                "Not enough funds to be withdrawn: {}".format(ck_amount_in_cents))
+                "Not enough funds to be withdrawn: {}".format(ck_amount_in_cents / 100))
 
         self._database.withdraw_atomic(self.rg, amount_in_cents)
 

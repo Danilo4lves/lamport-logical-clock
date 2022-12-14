@@ -29,19 +29,22 @@ def client(host='localhost', port=8082):
         print("4. Transfer")
 
         cmd_type = input()
-        clock_timestamp += 1
 
         # sock.sendall("teste".encode("UTF-8"))
 
         match int(cmd_type):
             case 1:
-                command.balance(clock_timestamp)
+                server_timestamp = command.balance(clock_timestamp)
+                clock_timestamp = max(clock_timestamp, server_timestamp)
             case 2:
-                command.deposit(clock_timestamp)
+                server_timestamp = command.deposit(clock_timestamp)
+                clock_timestamp = max(clock_timestamp, server_timestamp)
             case 3:
-                command.withdraw(clock_timestamp)
+                server_timestamp = command.withdraw(clock_timestamp)
+                clock_timestamp = max(clock_timestamp, server_timestamp)
             case 4:
-                command.transfer_to(clock_timestamp)
+                server_timestamp = command.transfer_to(clock_timestamp)
+                clock_timestamp = max(clock_timestamp, server_timestamp)
 
 
         print("Client timestamp: {}".format(clock_timestamp))
