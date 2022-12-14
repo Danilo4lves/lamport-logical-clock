@@ -26,8 +26,10 @@ def client(host='localhost', port=8082):
         print("1. Balance")
         print("2. Deposit")
         print("3. Withdraw")
+        print("4. Transfer")
 
         cmd_type = input()
+        clock_timestamp += 1
 
         # sock.sendall("teste".encode("UTF-8"))
 
@@ -36,6 +38,10 @@ def client(host='localhost', port=8082):
                 command.balance(clock_timestamp)
             case 2:
                 command.deposit(clock_timestamp)
+            case 3:
+                command.withdraw(clock_timestamp)
+            case 4:
+                command.transfer_to(clock_timestamp)
 
 
         print("Client timestamp: {}".format(clock_timestamp))

@@ -48,3 +48,27 @@ class Command:
 
         self.__send_message(message)
         self.__receive_message()
+
+    def withdraw(self, timestamp):
+        print("How much do you want to withdraw:")
+
+        amount = input()
+
+        message = Message(timestamp, MessageType.WITHDRAW, { "rg": self._rg, "amount": amount })
+
+        self.__send_message(message)
+        self.__receive_message()
+
+    def transfer_to(self, timestamp):
+        print("Inform destination rg:")
+
+        destination_rg = input()
+
+        print("Inform amount to transfer:")
+
+        amount = input()
+
+        message = Message(timestamp, MessageType.TRANSFER, { "rg": self._rg, "destination_rg": destination_rg, "amount": amount})
+
+        self.__send_message(message)
+        self.__receive_message()

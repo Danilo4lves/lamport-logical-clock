@@ -67,14 +67,14 @@ class CheckingAccount:
         destination_ck = self._database.get_checking_account(destination_rg)
 
         if (destination_ck is None):
-            raise Exception("Unable to make transfer")
+            raise Exception("Unable to make transfer, destination not exists")
 
         _, _, origin_amount_in_cents = self._database.get_checking_account(
             self.rg)
 
         if (amount_in_cents > origin_amount_in_cents):
             raise Exception("Not enough funds: {}".format(
-                origin_amount_in_cents))
+                origin_amount_in_cents / 100))
 
         self._database.withdraw(self.rg, amount_in_cents)
         self._database.deposit(destination_rg, amount_in_cents)

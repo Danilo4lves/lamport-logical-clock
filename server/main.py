@@ -76,7 +76,7 @@ def server(host='localhost', port=8082):
 
                 case MessageType.WITHDRAW:
                     checking_account = CheckingAccount.login(database, rg)
-                    amount_in_cents = ceil(message.content['amount'] * 100)
+                    amount_in_cents = ceil(int(message.content['amount']) * 100)
 
                     if (checking_account is None):
                         break
@@ -102,9 +102,15 @@ def server(host='localhost', port=8082):
                         break
 
                     destination_rg = message.content['destination_rg']
-                    amount_in_cents = ceil(message.content['amount'] * 100)
+                    amount_in_cents = ceil(int(message.content['amount']) * 100)
 
-                    checking_account.transfer_to(destination_rg, amount_in_cents)
+                    try:
+                        checking_account.transfer_to(destination_rg, amount_in_cents)
+                        msg = "The transfer was finished succesfully".encode("UTF-8");
+                        client.send(msg)
+                    except Exception as err:
+                        client.send(str(err).encode("UTF-8"))
+
 
 
     # end connection
