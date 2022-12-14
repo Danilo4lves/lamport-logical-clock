@@ -6,7 +6,7 @@ class Database:
 
     # Initializes database
     def __init__(self) -> None:
-        self._connection = sqlite3.connect("data.db")
+        self._connection = sqlite3.connect("data.db", check_same_thread=False)
 
         self.__migration()
 

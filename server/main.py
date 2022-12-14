@@ -1,7 +1,9 @@
 import socket
 import json
 import sys
+import threading
 from math import ceil
+from threading import Thread
 
 from checking_account import CheckingAccount
 from database import Database
@@ -14,26 +16,12 @@ from shared.message_type import MessageType
 
 print("path", __name__)
 
-def server(host='localhost', port=8082):
-    clock_timestamp = 0
-    data_payload = 4096  # The maximum amount of data to be received at once
-    database = Database.instance()
+clock_timestamp = 0
+database = Database.instance()
 
-    # Create a TCP socket
-    sock = socket.socket(socket.AF_INET,  socket.SOCK_STREAM)
-
-    # Enable reuse address/port
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-    # Bind the socket to the port
-    server_address = (host, port)
-
-    print("Starting up echo server  on %s port %s" % server_address)
-    sock.bind(server_address)
-
-    # Listen to clients, argument specifies the max no. of queued connections
-    sock.listen(5)
-    client, address = sock.accept()
+def on_new_client(client, address, data_payload):
+    global clock_timestamp
+    global database
 
     while True:
         print("Waiting to receive message from client")
@@ -44,6 +32,7 @@ def server(host='localhost', port=8082):
         if message:
             received_timestamp = message.timestamp
 
+            
             clock_timestamp = max(clock_timestamp, received_timestamp) + 1
 
             print("Server timestamp: {}".format(clock_timestamp))
@@ -122,6 +111,33 @@ def server(host='localhost', port=8082):
 
     # end connection
     client.close()
+
+
+def server(host='localhost', port=8082):
+    data_payload = 4096  # The maximum amount of data to be received at once
+    #database = Database.instance()
+
+    # Create a TCP socket
+    sock = socket.socket(socket.AF_INET,  socket.SOCK_STREAM)
+
+    # Enable reuse address/port
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    # Bind the socket to the port
+    server_address = (host, port)
+
+    print("Starting up echo server  on %s port %s" % server_address)
+    sock.bind(server_address)
+
+    # Listen to clients, argument specifies the max no. of queued connections
+    sock.listen(5)
+    
+
+    while True:
+        client, address = sock.accept()
+        Thread(target=on_new_client, args=(client, address, data_payload)).start()
+
+    
 
 
 server()
